@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .color-section {
+            margin-bottom: 30px;
+        }
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        input[type="color"] {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 120px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .current-color {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .board-sizes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .board-size {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        .board-size a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .board-size a:hover {
+            color: #0056b3;
+        }
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 200px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Color Generator</h1>
+        
+        <div class="color-section">
+            <h2>Set Your Color</h2>
+            <form method="POST" action="/set_color">
+                <div class="color-input">
+                    <input type="color" id="colorPicker" name="color" value="{{ current_color }}" onchange="updateTextInput()">
+                    <input type="text" id="colorText" name="color_text" value="{{ current_color }}" onchange="updateColorPicker()">
+                    <button type="submit">Apply Color</button>
+                </div>
+            </form>
+            
+            <div>
+                <strong>Current Color:</strong> {{ current_color }}
+                <div class="current-color" style="background-color: {{ current_color }};"></div>
+            </div>
+        </div>
+
+        <div class="board-sizes">
+            <h2>Board Sizes</h2>
+            <p>Click on any size to generate an image:</p>
+            {% for size in board_sizes %}
+            <div class="board-size">
+                <a href="/{{ size }}" target="_blank">{{ size }}</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="preview">
+            <h3>Preview</h3>
+            <p>Click any board size above to see a preview of your color image.</p>
+        </div>
+    </div>
+
+    <script>
+        function updateTextInput() {
+            document.getElementById('colorText').value = document.getElementById('colorPicker').value;
+        }
+        
+        function updateColorPicker() {
+            let textValue = document.getElementById('colorText').value;
+            if (textValue.startsWith('#')) {
+                document.getElementById('colorPicker').value = textValue;
+            } else {
+                document.getElementById('colorPicker').value = '#' + textValue;
+                document.getElementById('colorText').value = '#' + textValue;
+            }
+        }
+    </script>
+</body>
+</html>
