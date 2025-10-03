@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Illumination Request Colour Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .color-section {
+            margin-bottom: 30px;
+        }
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        input[type="color"] {
+            width: 60px;
+            height: 40px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 120px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .current-color {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        .board-sizes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .board-size {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        .board-size button {
+            background-color: transparent;
+            color: #007bff;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+        .board-size button:hover {
+            color: #0056b3;
+            background-color: #f8f9fa;
+        }
+        .preview {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 200px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .download-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .download-btn:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Illumination Request Colour Generator</h1>
+        
+        <div class="color-section">
+            <h2>Set Your Colour</h2>
+            <div class="color-input">
+                <input type="color" id="colorPicker" value="#FF0000" onchange="updateTextInput()">
+                <input type="text" id="colorText" value="#FF0000" onchange="updateColorPicker()">
+                <button onclick="updateCurrentColor()">Apply Colour</button>
+            </div>
+            
+            <div>
+                <strong>Current Colour:</strong> <span id="currentColorText">#FF0000</span>
+                <div class="current-color" id="currentColorDisplay" style="background-color: #FF0000;"></div>
+            </div>
+        </div>
+
+        <div class="board-sizes">
+            <h2>Board Sizes</h2>
+            <p>Click on any size to generate an image:</p>
+            <div class="board-size">
+                <button onclick="generateImage('2184x600')">2184x600</button>
+            </div>
+            <div class="board-size">
+                <button onclick="generateImage('1920x1080')">1920x1080</button>
+            </div>
+            <div class="board-size">
+                <button onclick="generateImage('9120x112')">9120x112</button>
+            </div>
+            <div class="board-size">
+                <button onclick="generateImage('4800x72')">4800x72</button>
+            </div>
+        </div>
+
+        <div class="preview" id="previewSection">
+            <h3>Preview</h3>
+            <p>Click any board size above to see a preview of your colour image.</p>
+            <canvas id="previewCanvas" class="hidden"></canvas>
+            <img id="previewImage" class="hidden" alt="Generated image preview">
+            <div class="download-section" id="downloadSection" class="hidden">
+                <button class="download-btn" onclick="downloadImage()">Download Image</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Board sizes configuration
+        const BOARD_SIZES = {
+            '2184x600': { width: 2184, height: 600 },
+            '1920x1080': { width: 1920, height: 1080 },
+            '9120x112': { width: 9120, height: 112 },
+            '4800x72': { width: 4800, height: 72 }
+        };
+
+        let currentColor = '#FF0000';
+        let currentImageData = null;
+
+        function updateTextInput() {
+            const colorPicker = document.getElementById('colorPicker');
+            const colorText = document.getElementById('colorText');
+            colorText.value = colorPicker.value;
+        }
+        
+        function updateColorPicker() {
+            const colorText = document.getElementById('colorText');
+            const colorPicker = document.getElementById('colorPicker');
+            let textValue = colorText.value;
+            
+            if (!textValue.startsWith('#')) {
+                textValue = '#' + textValue;
+                colorText.value = textValue;
+            }
+            
+            // Validate hex color
+            if (/^#[0-9A-F]{6}$/i.test(textValue)) {
+                colorPicker.value = textValue;
+            }
+        }
+
+        function updateCurrentColor() {
+            const colorText = document.getElementById('colorText');
+            const colorPicker = document.getElementById('colorPicker');
+            
+            // Use color picker value if it's valid, otherwise use text input
+            if (/^#[0-9A-F]{6}$/i.test(colorPicker.value)) {
+                currentColor = colorPicker.value;
+            } else if (/^#[0-9A-F]{6}$/i.test(colorText.value)) {
+                currentColor = colorText.value;
+                colorPicker.value = currentColor;
+            } else {
+                alert('Please enter a valid hex color (e.g., #FF0000)');
+                return;
+            }
+            
+            // Update display
+            document.getElementById('currentColorText').textContent = currentColor;
+            document.getElementById('currentColorDisplay').style.backgroundColor = currentColor;
+        }
+
+        function generateImage(size) {
+            if (!(size in BOARD_SIZES)) {
+                alert('Invalid board size');
+                return;
+            }
+
+            const dimensions = BOARD_SIZES[size];
+            const canvas = document.getElementById('previewCanvas');
+            const previewImage = document.getElementById('previewImage');
+            const downloadSection = document.getElementById('downloadSection');
+            
+            // Set canvas size for preview (scaled down)
+            const previewWidth = Math.min(dimensions.width, 400);
+            const previewHeight = Math.min(dimensions.height, 300);
+            const scale = Math.min(previewWidth / dimensions.width, previewHeight / dimensions.height);
+            
+            canvas.width = previewWidth;
+            canvas.height = previewHeight;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Fill with current color
+            ctx.fillStyle = currentColor;
+            ctx.fillRect(0, 0, previewWidth, previewHeight);
+            
+            // Convert canvas to image
+            const dataURL = canvas.toDataURL('image/png');
+            previewImage.src = dataURL;
+            previewImage.style.maxWidth = previewWidth + 'px';
+            previewImage.style.maxHeight = previewHeight + 'px';
+            
+            // Store the full-size image data for download
+            currentImageData = generateFullSizeImage(dimensions.width, dimensions.height);
+            
+            // Show preview and download button
+            canvas.classList.remove('hidden');
+            previewImage.classList.remove('hidden');
+            downloadSection.classList.remove('hidden');
+        }
+
+        function generateFullSizeImage(width, height) {
+            // Create a temporary canvas for full-size image
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            
+            const ctx = tempCanvas.getContext('2d');
+            ctx.fillStyle = currentColor;
+            ctx.fillRect(0, 0, width, height);
+            
+            return tempCanvas.toDataURL('image/png');
+        }
+
+        function downloadImage() {
+            if (!currentImageData) {
+                alert('Please generate an image first');
+                return;
+            }
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = `illumination-${currentColor.replace('#', '')}-${Date.now()}.png`;
+            link.href = currentImageData;
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initialize with default color
+        updateCurrentColor();
+    </script>
+</body>
+</html>
