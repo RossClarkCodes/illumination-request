@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        // Check if this is a dimension URL and redirect to .html version
+        const path = window.location.pathname;
+        const dimensionMatch = path.match(/^\/(\d+)x(\d+)$/);
+        
+        if (dimensionMatch) {
+            // Redirect to the .html version
+            window.location.href = path + '.html';
+        } else {
+            // Redirect to main page for other 404s
+            window.location.href = '/illumination-request/';
+        }
+    </script>
+</head>
+<body>
+    <p>Redirecting...</p>
+</body>
+</html>
