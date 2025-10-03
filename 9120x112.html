@@ -32,26 +32,46 @@
             
             const ctx = canvas.getContext('2d');
             
-            // Get colour from localStorage or use default
-            const colour = localStorage.getItem('illuminationColour') || '#FF0000';
-            ctx.fillStyle = colour;
-            ctx.fillRect(0, 0, width, height);
+            // Get colour from cloud storage
+            fetch('/api/update-colour')
+                .then(response => response.json())
+                .then(data => {
+                    const colour = data.colour || '#FF0000';
+                    ctx.fillStyle = colour;
+                    ctx.fillRect(0, 0, width, height);
+                })
+                .catch(error => {
+                    console.error('Error loading colour:', error);
+                    // Use default colour if fetch fails
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fillRect(0, 0, width, height);
+                });
         }
         
         
         // Initialize the image when page loads
         initializeImage();
         
-        // Listen for colour changes from other tabs/windows
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'illuminationColour' && e.newValue) {
-                // Update the image with new colour
-                const canvas = document.getElementById('imageCanvas');
-                const ctx = canvas.getContext('2d');
-                ctx.fillStyle = e.newValue;
-                ctx.fillRect(0, 0, width, height);
-            }
-        });
+        // Poll for colour changes every 2 seconds
+        setInterval(() => {
+            fetch('/api/update-colour')
+                .then(response => response.json())
+                .then(data => {
+                    const colour = data.colour || '#FF0000';
+                    const canvas = document.getElementById('imageCanvas');
+                    const ctx = canvas.getContext('2d');
+                    const currentColour = ctx.fillStyle;
+                    
+                    // Only update if colour has changed
+                    if (currentColour !== colour) {
+                        ctx.fillStyle = colour;
+                        ctx.fillRect(0, 0, width, height);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking colour:', error);
+                });
+        }, 2000);
     </script>
 </body>
 </html>
