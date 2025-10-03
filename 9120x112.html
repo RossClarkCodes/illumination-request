@@ -32,9 +32,8 @@
             
             const ctx = canvas.getContext('2d');
             
-            // Get colour from URL parameter or use default
-            const urlParams = new URLSearchParams(window.location.search);
-            const colour = urlParams.get('colour') || '#FF0000';
+            // Get colour from localStorage or use default
+            const colour = localStorage.getItem('illuminationColour') || '#FF0000';
             ctx.fillStyle = colour;
             ctx.fillRect(0, 0, width, height);
         }
@@ -42,6 +41,17 @@
         
         // Initialize the image when page loads
         initializeImage();
+        
+        // Listen for colour changes from other tabs/windows
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'illuminationColour' && e.newValue) {
+                // Update the image with new colour
+                const canvas = document.getElementById('imageCanvas');
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = e.newValue;
+                ctx.fillRect(0, 0, width, height);
+            }
+        });
     </script>
 </body>
 </html>

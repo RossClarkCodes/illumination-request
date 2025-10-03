@@ -303,32 +303,23 @@
         }
         
         function openSizePage(size) {
-            // Open the URL with current colour as parameter
-            const url = `${size}.html?colour=${encodeURIComponent(currentColor)}`;
+            // Open the clean URL without parameters
+            const url = `${size}.html`;
             window.open(url, '_blank');
         }
         
         function updateGlobalColour(colour) {
-            // Update colour globally via Netlify serverless function
-            fetch('/api/update-colour', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ colour: colour })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showSuccessMessage(colour);
-                } else {
-                    showErrorMessage(data.error || 'Failed to update colour');
-                }
-            })
-            .catch(error => {
-                console.error('Error updating colour:', error);
-                showErrorMessage('Failed to update colour globally');
-            });
+            // Update colour in localStorage and trigger storage event
+            localStorage.setItem('illuminationColour', colour);
+            
+            // Trigger storage event for other tabs/windows
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'illuminationColour',
+                newValue: colour,
+                oldValue: localStorage.getItem('illuminationColour')
+            }));
+            
+            showSuccessMessage(colour);
         }
         
         function showSuccessMessage(colour) {
