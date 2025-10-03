@@ -223,6 +223,9 @@
             // Update display
             document.getElementById('currentColorText').textContent = currentColor;
             document.getElementById('currentColorDisplay').style.backgroundColor = currentColor;
+            
+            // Save to localStorage for direct image URLs
+            localStorage.setItem('illuminationColour', currentColor);
         }
 
         function generateImage(size) {
@@ -296,8 +299,10 @@
         }
         
         function openDirectImage(size) {
-            // Open the direct URL with current colour as parameter
-            const url = `/${size}?colour=${encodeURIComponent(currentColor)}`;
+            // Save current colour to localStorage before opening direct URL
+            localStorage.setItem('illuminationColour', currentColor);
+            // Open the direct URL without colour parameter
+            const url = `/${size}`;
             window.open(url, '_blank');
         }
 
@@ -310,9 +315,8 @@
                 const width = parseInt(dimensionMatch[1]);
                 const height = parseInt(dimensionMatch[2]);
                 
-                // Get colour from URL parameters or use default
-                const urlParams = new URLSearchParams(window.location.search);
-                const colour = urlParams.get('colour') || '#FF0000';
+                // Get colour from localStorage (set from home page) or use default
+                const colour = localStorage.getItem('illuminationColour') || '#FF0000';
                 
                 // Display full-size image
                 displayFullSizeImage(width, height, colour);
@@ -384,8 +388,19 @@
             document.body.appendChild(backBtn);
         }
         
-        // Initialize with default color
-        updateCurrentColor();
+        // Initialize with colour from localStorage or default
+        function initializeColor() {
+            const savedColor = localStorage.getItem('illuminationColour');
+            if (savedColor) {
+                currentColor = savedColor;
+                document.getElementById('colorPicker').value = savedColor;
+                document.getElementById('colorText').value = savedColor;
+            }
+            updateCurrentColor();
+        }
+        
+        // Initialize with saved colour or default
+        initializeColor();
         
         // Check for direct image URL on page load
         if (!checkForDirectImageURL()) {
