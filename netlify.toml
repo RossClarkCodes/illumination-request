@@ -1,10 +1,6 @@
 [build]
   functions = "netlify/functions"
   publish = "."
-  command = "echo 'Static HTML site - no build required'"
-
-[build.environment]
-  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/api/*"
