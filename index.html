@@ -147,16 +147,16 @@
             <h2>Board Sizes</h2>
             <p>Click on any size to generate an image:</p>
             <div class="board-size">
-                <a href="2184x600.html" target="_blank">2184x600</a>
+                <a href="#" onclick="openSizePage('2184x600')" target="_blank">2184x600</a>
             </div>
             <div class="board-size">
-                <a href="1920x1080.html" target="_blank">1920x1080</a>
+                <a href="#" onclick="openSizePage('1920x1080')" target="_blank">1920x1080</a>
             </div>
             <div class="board-size">
-                <a href="9120x112.html" target="_blank">9120x112</a>
+                <a href="#" onclick="openSizePage('9120x112')" target="_blank">9120x112</a>
             </div>
             <div class="board-size">
-                <a href="4800x72.html" target="_blank">4800x72</a>
+                <a href="#" onclick="openSizePage('4800x72')" target="_blank">4800x72</a>
             </div>
         </div>
 
@@ -296,6 +296,12 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        }
+        
+        function openSizePage(size) {
+            // Open the size page with current colour as URL parameter
+            const url = `${size}.html?colour=${encodeURIComponent(currentColor)}`;
+            window.open(url, '_blank');
         }
         
         
