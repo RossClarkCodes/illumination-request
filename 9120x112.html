@@ -11,42 +11,9 @@
             background-color: #000;
             overflow: hidden;
         }
-        .controls {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1001;
-            display: flex;
-            gap: 10px;
-        }
-        .controls button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .back-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-        .download-btn {
-            background-color: #007bff;
-            color: white;
-        }
-        .back-btn:hover {
-            background-color: #5a6268;
-        }
-        .download-btn:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
 <body>
-    <div class="controls">
-        <button class="back-btn" onclick="goBack()">← Back to Generator</button>
-        <button class="download-btn" onclick="downloadImage()">Download Image</button>
-    </div>
     
     <canvas id="imageCanvas"></canvas>
 
@@ -73,19 +40,6 @@
             ctx.fillRect(0, 0, width, height);
         }
         
-        function downloadImage() {
-            const canvas = document.getElementById('imageCanvas');
-            const colour = localStorage.getItem('illuminationColour') || '#FF0000';
-            
-            const link = document.createElement('a');
-            link.download = `illumination-${colour.replace('#', '')}-${width}x${height}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }
-        
-        function goBack() {
-            window.location.href = '/illumination-request/';
-        }
         
         // Initialize the image when page loads
         initializeImage();
