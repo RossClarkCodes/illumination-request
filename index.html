@@ -80,17 +80,17 @@
             text-align: center;
             border: 2px solid #e9ecef;
         }
-        .board-size button {
-            background-color: transparent;
+        .board-size a {
+            text-decoration: none;
             color: #007bff;
             font-weight: bold;
             font-size: 18px;
+            display: block;
             padding: 10px;
-            border: none;
-            cursor: pointer;
             width: 100%;
+            text-align: center;
         }
-        .board-size button:hover {
+        .board-size a:hover {
             color: #0056b3;
             background-color: #f8f9fa;
         }
@@ -147,16 +147,16 @@
             <h2>Board Sizes</h2>
             <p>Click on any size to generate an image:</p>
             <div class="board-size">
-                <button onclick="generateImage('2184x600')">2184x600</button>
+                <a href="#" onclick="openDirectImage('2184x600')" target="_blank">2184x600</a>
             </div>
             <div class="board-size">
-                <button onclick="generateImage('1920x1080')">1920x1080</button>
+                <a href="#" onclick="openDirectImage('1920x1080')" target="_blank">1920x1080</a>
             </div>
             <div class="board-size">
-                <button onclick="generateImage('9120x112')">9120x112</button>
+                <a href="#" onclick="openDirectImage('9120x112')" target="_blank">9120x112</a>
             </div>
             <div class="board-size">
-                <button onclick="generateImage('4800x72')">4800x72</button>
+                <a href="#" onclick="openDirectImage('4800x72')" target="_blank">4800x72</a>
             </div>
         </div>
 
@@ -294,9 +294,104 @@
             link.click();
             document.body.removeChild(link);
         }
+        
+        function openDirectImage(size) {
+            // Open the direct URL with current colour as parameter
+            const url = `/${size}?colour=${encodeURIComponent(currentColor)}`;
+            window.open(url, '_blank');
+        }
 
+        // Check if this is a direct image URL (e.g., /1920x1080)
+        function checkForDirectImageURL() {
+            const path = window.location.pathname;
+            const dimensionMatch = path.match(/^\/(\d+)x(\d+)$/);
+            
+            if (dimensionMatch) {
+                const width = parseInt(dimensionMatch[1]);
+                const height = parseInt(dimensionMatch[2]);
+                
+                // Get colour from URL parameters or use default
+                const urlParams = new URLSearchParams(window.location.search);
+                const colour = urlParams.get('colour') || '#FF0000';
+                
+                // Display full-size image
+                displayFullSizeImage(width, height, colour);
+                return true;
+            }
+            return false;
+        }
+        
+        function displayFullSizeImage(width, height, colour) {
+            // Hide the main interface
+            document.querySelector('.container').style.display = 'none';
+            
+            // Create full-size canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            canvas.style.position = 'fixed';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.zIndex = '1000';
+            canvas.style.backgroundColor = '#000';
+            
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = colour;
+            ctx.fillRect(0, 0, width, height);
+            
+            // Add to page
+            document.body.appendChild(canvas);
+            
+            // Add download button
+            const downloadBtn = document.createElement('button');
+            downloadBtn.textContent = 'Download Image';
+            downloadBtn.style.position = 'fixed';
+            downloadBtn.style.top = '20px';
+            downloadBtn.style.right = '20px';
+            downloadBtn.style.zIndex = '1001';
+            downloadBtn.style.padding = '10px 20px';
+            downloadBtn.style.backgroundColor = '#007bff';
+            downloadBtn.style.color = 'white';
+            downloadBtn.style.border = 'none';
+            downloadBtn.style.borderRadius = '5px';
+            downloadBtn.style.cursor = 'pointer';
+            downloadBtn.onclick = function() {
+                const link = document.createElement('a');
+                link.download = `illumination-${colour.replace('#', '')}-${width}x${height}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+            
+            document.body.appendChild(downloadBtn);
+            
+            // Add back button
+            const backBtn = document.createElement('button');
+            backBtn.textContent = '← Back to Generator';
+            backBtn.style.position = 'fixed';
+            backBtn.style.top = '20px';
+            backBtn.style.left = '20px';
+            backBtn.style.zIndex = '1001';
+            backBtn.style.padding = '10px 20px';
+            backBtn.style.backgroundColor = '#6c757d';
+            backBtn.style.color = 'white';
+            backBtn.style.border = 'none';
+            backBtn.style.borderRadius = '5px';
+            backBtn.style.cursor = 'pointer';
+            backBtn.onclick = function() {
+                window.location.href = '/';
+            };
+            
+            document.body.appendChild(backBtn);
+        }
+        
         // Initialize with default color
         updateCurrentColor();
+        
+        // Check for direct image URL on page load
+        if (!checkForDirectImageURL()) {
+            // Only show preview functionality if not on a direct image URL
+            // Keep the existing preview functionality for the main page
+        }
     </script>
 </body>
 </html>
