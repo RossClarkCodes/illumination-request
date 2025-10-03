@@ -102,20 +102,20 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎨 Color Generator</h1>
+        <h1>🎨 Illumination Request Colour Generator</h1>
         
         <div class="color-section">
-            <h2>Set Your Color</h2>
+            <h2>Set Your Colour</h2>
             <form method="POST" action="/set_color">
                 <div class="color-input">
                     <input type="color" id="colorPicker" name="color" value="{{ current_color }}" onchange="updateTextInput()">
                     <input type="text" id="colorText" name="color_text" value="{{ current_color }}" onchange="updateColorPicker()">
-                    <button type="submit">Apply Color</button>
+                    <button type="submit">Apply Colour</button>
                 </div>
             </form>
             
             <div>
-                <strong>Current Color:</strong> {{ current_color }}
+                <strong>Current Colour:</strong> {{ current_color }}
                 <div class="current-color" style="background-color: {{ current_color }};"></div>
             </div>
         </div>
@@ -132,7 +132,7 @@
 
         <div class="preview">
             <h3>Preview</h3>
-            <p>Click any board size above to see a preview of your color image.</p>
+            <p>Click any board size above to see a preview of your colour image.</p>
         </div>
     </div>
 
