@@ -224,7 +224,7 @@
             document.getElementById('currentColorText').textContent = currentColor;
             document.getElementById('currentColorDisplay').style.backgroundColor = currentColor;
             
-            // Save to localStorage for direct image URLs
+            // Save to localStorage for persistence
             localStorage.setItem('illuminationColour', currentColor);
         }
 
@@ -299,8 +299,8 @@
         }
         
         function openSizePage(size) {
-            // Open the size page with current colour as URL parameter
-            const url = `${size}.html?colour=${encodeURIComponent(currentColor)}`;
+            // Open the clean URL without parameters
+            const url = `${size}.html`;
             window.open(url, '_blank');
         }
         
