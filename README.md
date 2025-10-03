@@ -47,3 +47,33 @@ python app.py
 - `http://localhost:8000/4800x72` - Generate 4800x72 image
 
 The color will be maintained across all requests until changed on the main page.
+
+## Deployment
+
+### Railway (Recommended - Free)
+
+1. Go to [railway.app](https://railway.app) and sign up with GitHub
+2. Click "New Project" → "Deploy from GitHub repo"
+3. Select your `illumination-request` repository
+4. Railway will automatically detect the Flask app and deploy it
+5. Your app will be available at a Railway-provided URL (e.g., `https://your-app-name.railway.app`)
+
+### Render (Alternative - Free)
+
+1. Go to [render.com](https://render.com) and sign up with GitHub
+2. Click "New" → "Web Service"
+3. Connect your GitHub repository
+4. Set build command: `pip install -r requirements.txt`
+5. Set start command: `python app.py`
+6. Deploy!
+
+### Local Development
+
+```bash
+git clone https://github.com/RossClarkCodes/illumination-request.git
+cd illumination-request
+pip install -r requirements.txt
+python app.py
+```
+
+Then open `http://localhost:8000` in your browser.
