@@ -227,8 +227,8 @@
             // Save to localStorage for persistence
             localStorage.setItem('illuminationColour', currentColor);
             
-            // Update the global colour file
-            updateGlobalColour(currentColor);
+            // Update all size pages with new colour
+            updateAllSizePages(currentColor);
             
         }
 
@@ -308,27 +308,32 @@
             window.open(url, '_blank');
         }
         
-        function updateGlobalColour(colour) {
-            // Update the global colour file using GitHub API
-            // This will require authentication, but for now we'll use a simple approach
-            fetch('current-colour.txt', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'text/plain',
-                },
-                body: colour
-            }).catch(err => {
-                console.log('Could not update global colour file:', err);
-                // Fallback: try to update via GitHub API if possible
-                updateColourViaGitHub(colour);
+        function updateAllSizePages(colour) {
+            // Update the colour variable in all size pages
+            const sizes = ['2184x600', '1920x1080', '9120x112', '4800x72'];
+            
+            sizes.forEach(size => {
+                // Create a hidden iframe to load and update each page
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = `${size}.html`;
+                iframe.onload = function() {
+                    try {
+                        // Set the colour variable in the iframe
+                        iframe.contentWindow.ILLUMINATION_COLOUR = colour;
+                    } catch (e) {
+                        console.log(`Could not update ${size}:`, e);
+                    }
+                };
+                document.body.appendChild(iframe);
+                
+                // Remove iframe after a short delay
+                setTimeout(() => {
+                    if (iframe.parentNode) {
+                        iframe.parentNode.removeChild(iframe);
+                    }
+                }, 1000);
             });
-        }
-        
-        function updateColourViaGitHub(colour) {
-            // This would require GitHub API authentication
-            // For now, we'll just log the colour that should be updated
-            console.log(`Colour should be updated to: ${colour}`);
-            console.log('Manual update needed: Replace content of current-colour.txt with:', colour);
         }
         
         
