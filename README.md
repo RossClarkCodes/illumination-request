@@ -1,10 +1,10 @@
 # Illumination Request Colour Generator
 
-A web application for generating solid color images in specific board sizes for illumination requests.
+A web application for generating solid colour images in specific board sizes for illumination requests.
 
 ## Features
 
-- Choose any color using a color picker or hex input
+- Choose any colour using a colour picker or hex input
 - Generate images in four predefined board sizes:
   - 2184x600 pixels
   - 1920x1080 pixels  
@@ -28,8 +28,8 @@ A web application for generating solid color images in specific board sizes for 
 ## Usage
 
 1. Open the web page
-2. Use the color picker or type a hex color code (e.g., #FF0000)
-3. Click "Apply Colour" to set your color
+2. Use the colour picker or type a hex colour code (e.g., #FF0000)
+3. Click "Apply Colour" to set your colour
 4. Click on any board size to generate a preview
 5. Click "Download Image" to save the full-size image
 
