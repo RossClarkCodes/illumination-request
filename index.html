@@ -226,6 +226,7 @@
             
             // Save to localStorage for persistence
             localStorage.setItem('illuminationColour', currentColor);
+            
         }
 
         function generateImage(size) {
@@ -299,10 +300,11 @@
         }
         
         function openSizePage(size) {
-            // Open the clean URL without parameters
-            const url = `${size}.html`;
+            // Open the size page with current colour embedded
+            const url = `${size}.html?colour=${encodeURIComponent(currentColor)}`;
             window.open(url, '_blank');
         }
+        
         
         
         // Initialize with colour from localStorage or default

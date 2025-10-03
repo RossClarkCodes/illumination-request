@@ -32,8 +32,9 @@
             
             const ctx = canvas.getContext('2d');
             
-            // Get colour from localStorage or use default
-            const colour = localStorage.getItem('illuminationColour') || '#FF0000';
+            // Get colour from URL parameter or use default
+            const urlParams = new URLSearchParams(window.location.search);
+            const colour = urlParams.get('colour') || '#FF0000';
             
             // Fill with the colour
             ctx.fillStyle = colour;
