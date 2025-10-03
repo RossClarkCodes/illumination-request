@@ -32,13 +32,24 @@
             
             const ctx = canvas.getContext('2d');
             
-            // Get colour from URL parameter or use default
-            const urlParams = new URLSearchParams(window.location.search);
-            const colour = urlParams.get('colour') || '#FF0000';
-            
-            // Fill with the colour
-            ctx.fillStyle = colour;
-            ctx.fillRect(0, 0, width, height);
+            // Get colour from global file or use default
+            fetch('current-colour.txt')
+                .then(response => response.text())
+                .then(colour => {
+                    const cleanColour = colour.trim();
+                    if (cleanColour && cleanColour.startsWith('#')) {
+                        ctx.fillStyle = cleanColour;
+                        ctx.fillRect(0, 0, width, height);
+                    } else {
+                        ctx.fillStyle = '#FF0000';
+                        ctx.fillRect(0, 0, width, height);
+                    }
+                })
+                .catch(err => {
+                    console.log('Could not load global colour:', err);
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fillRect(0, 0, width, height);
+                });
         }
         
         

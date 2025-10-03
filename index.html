@@ -227,6 +227,9 @@
             // Save to localStorage for persistence
             localStorage.setItem('illuminationColour', currentColor);
             
+            // Update the global colour file
+            updateGlobalColour(currentColor);
+            
         }
 
         function generateImage(size) {
@@ -300,9 +303,32 @@
         }
         
         function openSizePage(size) {
-            // Open the size page with current colour embedded
-            const url = `${size}.html?colour=${encodeURIComponent(currentColor)}`;
+            // Open the clean URL without parameters
+            const url = `${size}.html`;
             window.open(url, '_blank');
+        }
+        
+        function updateGlobalColour(colour) {
+            // Update the global colour file using GitHub API
+            // This will require authentication, but for now we'll use a simple approach
+            fetch('current-colour.txt', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'text/plain',
+                },
+                body: colour
+            }).catch(err => {
+                console.log('Could not update global colour file:', err);
+                // Fallback: try to update via GitHub API if possible
+                updateColourViaGitHub(colour);
+            });
+        }
+        
+        function updateColourViaGitHub(colour) {
+            // This would require GitHub API authentication
+            // For now, we'll just log the colour that should be updated
+            console.log(`Colour should be updated to: ${colour}`);
+            console.log('Manual update needed: Replace content of current-colour.txt with:', colour);
         }
         
         
