@@ -1,59 +1,75 @@
-// Netlify serverless function to update global colour
+// Netlify serverless function to get/set global colour
 exports.handler = async (event, context) => {
-  // Only allow POST requests
-  if (event.httpMethod !== 'POST') {
+  // Handle CORS preflight
+  if (event.httpMethod === 'OPTIONS') {
     return {
-      statusCode: 405,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+      },
+      body: ''
     };
   }
 
   try {
-    const { colour } = JSON.parse(event.body);
-    
-    if (!colour || !colour.startsWith('#')) {
+    if (event.httpMethod === 'GET') {
+      // Return current colour (default)
       return {
-        statusCode: 400,
-        body: JSON.stringify({ error: 'Invalid colour format' })
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({ colour: '#FF0000' })
       };
     }
 
-    // Update all HTML files with the new colour
-    const fs = require('fs');
-    const path = require('path');
-    
-    const files = ['2184x600.html', '1920x1080.html', '9120x112.html', '4800x72.html'];
-    
-    files.forEach(filename => {
-      const filePath = path.join(__dirname, '..', '..', filename);
-      if (fs.existsSync(filePath)) {
-        let content = fs.readFileSync(filePath, 'utf8');
-        // Replace the colour variable
-        content = content.replace(
-          /window\.ILLUMINATION_COLOUR = '[^']*'/g,
-          `window.ILLUMINATION_COLOUR = '${colour}'`
-        );
-        fs.writeFileSync(filePath, content);
+    if (event.httpMethod === 'POST') {
+      const { colour } = JSON.parse(event.body);
+      
+      if (!colour || !colour.startsWith('#')) {
+        return {
+          statusCode: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+          body: JSON.stringify({ error: 'Invalid colour format' })
+        };
       }
-    });
+
+      // For now, just return success - the colour will be passed via URL
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({ 
+          success: true, 
+          message: `Colour received: ${colour}`,
+          colour: colour
+        })
+      };
+    }
 
     return {
-      statusCode: 200,
+      statusCode: 405,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+        'Access-Control-Allow-Origin': '*'
       },
-      body: JSON.stringify({ 
-        success: true, 
-        message: `Colour updated to ${colour}`,
-        colour: colour
-      })
+      body: JSON.stringify({ error: 'Method not allowed' })
     };
   } catch (error) {
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
       body: JSON.stringify({ error: 'Internal server error' })
     };
   }

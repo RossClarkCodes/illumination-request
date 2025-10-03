@@ -18,10 +18,6 @@
     <canvas id="imageCanvas"></canvas>
 
     <script>
-        // Global colour variable - updated by script
-        window.ILLUMINATION_COLOUR = '#FF0000';
-    </script>
-    <script>
         const width = 2184;
         const height = 600;
         
@@ -36,8 +32,9 @@
             
             const ctx = canvas.getContext('2d');
             
-            // Get colour from global variable or use default
-            const colour = window.ILLUMINATION_COLOUR || '#FF0000';
+            // Get colour from URL parameter or use default
+            const urlParams = new URLSearchParams(window.location.search);
+            const colour = urlParams.get('colour') || '#FF0000';
             ctx.fillStyle = colour;
             ctx.fillRect(0, 0, width, height);
         }

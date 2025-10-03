@@ -303,8 +303,8 @@
         }
         
         function openSizePage(size) {
-            // Open the clean URL without parameters
-            const url = `${size}.html`;
+            // Open the URL with current colour as parameter
+            const url = `${size}.html?colour=${encodeURIComponent(currentColor)}`;
             window.open(url, '_blank');
         }
         
