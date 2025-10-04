@@ -1,9 +1,8 @@
 // Netlify serverless function to store/get global colour
-const fs = require('fs');
-const path = require('path');
+// Using in-memory storage since Netlify functions are read-only
 
-// File path for storing the colour
-const COLOUR_FILE = path.join(__dirname, '..', '..', 'current-colour.json');
+// Global variable to store colour (resets on function restart)
+let globalColour = '#FF0000';
 
 exports.handler = async (event, context) => {
   // Handle CORS preflight
@@ -21,26 +20,13 @@ exports.handler = async (event, context) => {
 
   try {
     if (event.httpMethod === 'GET') {
-      // Read current colour from file
-      let colour = '#FF0000'; // default
-      
-      try {
-        if (fs.existsSync(COLOUR_FILE)) {
-          const data = fs.readFileSync(COLOUR_FILE, 'utf8');
-          const parsed = JSON.parse(data);
-          colour = parsed.colour || '#FF0000';
-        }
-      } catch (err) {
-        console.log('Error reading colour file:', err);
-      }
-
       return {
         statusCode: 200,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         },
-        body: JSON.stringify({ colour: colour })
+        body: JSON.stringify({ colour: globalColour })
       };
     }
 
@@ -58,34 +44,21 @@ exports.handler = async (event, context) => {
         };
       }
 
-      // Write colour to file
-      try {
-        const colourData = { colour: colour, timestamp: new Date().toISOString() };
-        fs.writeFileSync(COLOUR_FILE, JSON.stringify(colourData));
-        
-        return {
-          statusCode: 200,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          },
-          body: JSON.stringify({ 
-            success: true, 
-            message: `Colour updated to ${colour}`,
-            colour: colour
-          })
-        };
-      } catch (err) {
-        console.error('Error writing colour file:', err);
-        return {
-          statusCode: 500,
-          headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
-          },
-          body: JSON.stringify({ error: 'Failed to save colour' })
-        };
-      }
+      // Update global colour in memory
+      globalColour = colour;
+      
+      return {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify({ 
+          success: true, 
+          message: `Colour updated to ${colour}`,
+          colour: colour
+        })
+      };
     }
 
     return {
